@@ -119,4 +119,4 @@ judge = LLMJudge(model="gpt-4o", temperature=0.0)
 
 ## License
 
-MIT License - see LICENSE file.
+Apache 2.0 License - see LICENSE file.
