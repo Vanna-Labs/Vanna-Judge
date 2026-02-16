@@ -27,6 +27,47 @@ cd vanna-judge
 pip install -e .
 ```
 
+## Smoke Test (Published Package)
+
+This verifies that the public GitHub package installs and can execute a real
+judge call.
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install "git+https://github.com/Vanna-Labs/Vanna-Judge.git"
+```
+
+Set your API key (or put it in `.env` and load it in your shell):
+
+```bash
+export OPENAI_API_KEY=your-key-here
+```
+
+Run a minimal live call:
+
+```bash
+python - <<'PY'
+import asyncio
+from vanna_judge import LLMJudge
+
+async def main():
+    judge = LLMJudge(model="gpt-5.1", temperature=0.0, timeout_s=20, max_retries=0)
+    verdict, reasoning = await judge.judge(
+        question="What is 2 + 2?",
+        expected_answer="4",
+        system_answer="The answer is 4.",
+    )
+    print("verdict:", verdict.value)
+    print("reasoning:", reasoning)
+
+asyncio.run(main())
+PY
+```
+
+Expected: `verdict: correct`
+
 ## Quick Start
 
 ```python

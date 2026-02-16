@@ -425,8 +425,8 @@ def print_eval_summary(summary: EvalSummary) -> None:
     print(f"EVALUATION SUMMARY: {summary.system_name}")
     print("=" * 60)
     print(f"Total Questions: {summary.total_questions}")
-    print(f"")
-    print(f"Results:")
+    print("")
+    print("Results:")
     print(f"  Correct:           {summary.correct:3d} ({summary.correct_pct:5.1f}%)")
     print(
         f"  Partially Correct: {summary.partially_correct:3d} ({summary.partially_correct_pct:5.1f}%)"
@@ -434,7 +434,7 @@ def print_eval_summary(summary: EvalSummary) -> None:
     print(f"  Abstained:         {summary.abstained:3d} ({summary.abstained_pct:5.1f}%)")
     print(f"  Incorrect:         {summary.incorrect:3d} ({summary.incorrect_pct:5.1f}%)")
     print(f"  Judge Errors:      {summary.errors:3d} ({summary.error_pct:5.1f}%)")
-    print(f"")
+    print("")
     print(f"Overall Accuracy (correct + partial): {summary.accuracy_pct:.1f}%")
     print(
         f"Accuracy Excluding Judge Errors: {summary.accuracy_pct_excluding_errors:.1f}%"

@@ -65,6 +65,57 @@ Exit codes:
 - `1`: thresholds failed
 - `2`: setup/runtime issue (missing API key or dependencies)
 
+## 3) Published Package Smoke Test
+
+Use this when you want to confirm the public GitHub package itself works, not
+just your local editable checkout.
+
+Install from GitHub:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install "git+https://github.com/Vanna-Labs/Vanna-Judge.git"
+```
+
+Set OpenAI key:
+
+```bash
+export OPENAI_API_KEY=your-key-here
+```
+
+Run the live smoke call:
+
+```bash
+python - <<'PY'
+import asyncio
+import vanna_judge
+from vanna_judge import LLMJudge
+
+print("version:", vanna_judge.__version__)
+print("module_path:", vanna_judge.__file__)
+
+async def main():
+    judge = LLMJudge(model="gpt-5.1", temperature=0.0, timeout_s=20, max_retries=0)
+    verdict, reasoning = await judge.judge(
+        question="What is 2 + 2?",
+        expected_answer="4",
+        system_answer="The answer is 4.",
+    )
+    print("verdict:", verdict.value)
+    print("reasoning:", reasoning)
+
+asyncio.run(main())
+PY
+```
+
+Pass criteria:
+
+- `module_path` points into `.venv/.../site-packages/vanna_judge/...`
+- `verdict` is `correct`
+- no uncaught exceptions
+
 ## Dataset
 
 - File: `eval_datasets/preflight_large.json`
@@ -81,4 +132,3 @@ Exit codes:
 3. `pytest -q`
 4. `python3 scripts/run_preflight_live_eval.py --system-name MyRAG --concurrency 8`
 5. `git status` and verify `.env`/`.venv` remain ignored
-
