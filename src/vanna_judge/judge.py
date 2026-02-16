@@ -3,94 +3,67 @@ MODULE: LLM Judge
 DESCRIPTION: LLM-based judge for evaluating RAG system answers against expected answers.
              Distinguishes between 4 verdict categories: correct, partially correct,
              abstained (said "don't know" when answer exists), and incorrect.
+             Runtime/model failures are returned as ERROR.
 """
 
 import asyncio
-from typing import Any
+from typing import Literal
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 
-from zomma_judge.schemas import JudgeVerdict
+from vanna_judge.schemas import JudgeVerdict
 
 
 class JudgeOutput(BaseModel):
     """Structured output from the LLM judge."""
 
+    verdict: Literal["correct", "partially", "abstained", "incorrect"] = Field(
+        description="Final verdict."
+    )
+    matched_facts: list[str] = Field(
+        default_factory=list,
+        description="Expected facts that are present and correct in the system answer.",
+    )
+    missing_facts: list[str] = Field(
+        default_factory=list,
+        description="Expected facts that are absent from the system answer.",
+    )
+    contradictions: list[str] = Field(
+        default_factory=list,
+        description="Any direct factual contradictions versus the expected answer.",
+    )
     reasoning: str = Field(
-        description="Step-by-step reasoning for the verdict, analyzing the system answer against the expected answer"
-    )
-    verdict: str = Field(
-        description="One of: 'correct', 'partially', 'abstained', 'incorrect'"
+        description="Brief rationale (1-3 sentences)."
     )
 
 
-JUDGE_SYSTEM_PROMPT = """You are an expert judge evaluating RAG (Retrieval-Augmented Generation) system answers.
+JUDGE_SYSTEM_PROMPT = """You are a strict evaluator for RAG system outputs.
 
-Your task is to compare a system's answer against the expected (ground truth) answer and determine the verdict.
+Evaluate only by comparing:
+1) expected answer (ground truth)
+2) system answer (candidate)
 
-## Verdict Categories
+Use exactly one verdict:
+- "correct": all key expected facts are present, no contradictions.
+- "partially": some expected facts are present, no contradictions.
+- "abstained": candidate does not answer (e.g., "I don't know", "not in context", empty).
+- "incorrect": any key factual contradiction exists.
 
-You MUST classify the answer into exactly ONE of these 4 categories:
+Rules:
+- Missing facts without contradiction => "partially", not "incorrect".
+- Extra details are neutral unless they contradict expected facts.
+- Prefer semantic matching over exact wording.
+- If contradiction exists, verdict must be "incorrect".
 
-1. **CORRECT** ("correct")
-   - All key facts from the expected answer are present in the system answer
-   - No factual errors or contradictions
-   - Minor differences in wording or phrasing are acceptable
-   - Additional correct details beyond the expected answer are GOOD, not penalized
-   - More comprehensive answers that include the expected content = CORRECT
-
-2. **PARTIALLY_CORRECT** ("partially")
-   - Some (but not all) key facts from the expected answer are present
-   - The facts that ARE present are accurate
-   - Nothing in the answer is factually wrong or contradictory
-   - The answer is incomplete but not misleading
-   - Missing some items from an enumeration (e.g., lists 4 of 5 districts) = PARTIALLY, not incorrect
-
-3. **ABSTAINED** ("abstained")
-   - The system explicitly states it cannot find or doesn't have the information
-   - Common patterns include:
-     * "I don't have information about..."
-     * "The context doesn't contain..."
-     * "I cannot find..."
-     * "Based on the available information, I'm unable to..."
-     * "No relevant information was found..."
-     * Empty or blank responses
-   - The system declined to answer when a correct answer exists
-   - This is NOT the same as giving wrong information
-
-4. **INCORRECT** ("incorrect")
-   - The system CONTRADICTS the expected answer on a key factual point
-   - Example: Expected "demand was unchanged", System says "demand declined" = INCORRECT
-   - Example: Expected "conditions were mixed", System says "conditions were uniformly negative" = INCORRECT
-   - Reserved for genuine factual errors, not stylistic differences or additional detail
-
-## CRITICAL GUIDELINES
-
-**Comprehensiveness is GOOD:**
-- A more detailed answer that includes the expected facts + additional context = CORRECT
-- Adding contextual information (dates, years, explanations) = helpful, not an error
-- Answering a broad question with multi-district data = thorough, not wrong
-
-**INCORRECT is reserved for contradictions:**
-- Only use INCORRECT when the answer directly contradicts expected facts
-- Missing details = PARTIALLY_CORRECT, not incorrect
-- Different phrasing with same meaning = CORRECT
-- More detail than expected = CORRECT
-
-## Evaluation Process
-
-1. Identify the key facts in the expected answer
-2. Check if each key fact is present in the system answer
-3. Check for any factual CONTRADICTIONS (not just differences)
-4. Check if the system abstained from answering
-5. Assign the appropriate verdict
-
-## Output Format
-
-Provide your reasoning first, then the verdict. Be specific about which facts matched, which were missing, and any contradictions found."""
-
+Return JSON matching the schema with:
+- verdict
+- matched_facts
+- missing_facts
+- contradictions
+- reasoning (1-3 sentences, concise)
+"""
 
 JUDGE_USER_PROMPT = """## Question
 {question}
@@ -114,13 +87,27 @@ class LLMJudge:
         verdict, reasoning = await judge.judge(question, expected, system_answer)
     """
 
-    def __init__(self, model: str = "gpt-5.1", temperature: float = 0.0):
+    def __init__(
+        self,
+        model: str = "gpt-5.1",
+        temperature: float = 0.0,
+        timeout_s: float = 30.0,
+        max_retries: int = 2,
+        retry_backoff_s: float = 1.0,
+    ):
         """Initialize the LLM judge.
 
         Args:
             model: OpenAI model to use for judging. Defaults to gpt-5.1.
             temperature: LLM temperature. Defaults to 0.0 for deterministic output.
+            timeout_s: Timeout per model call in seconds.
+            max_retries: Retry attempts for transient failures.
+            retry_backoff_s: Initial backoff for retries (exponential).
         """
+        self.model = model
+        self.timeout_s = timeout_s
+        self.max_retries = max_retries
+        self.retry_backoff_s = retry_backoff_s
         self.llm = ChatOpenAI(model=model, temperature=temperature)
         self.structured_llm = self.llm.with_structured_output(JudgeOutput)
 
@@ -131,7 +118,7 @@ class LLMJudge:
 
         self.chain = self.prompt | self.structured_llm
 
-    def _parse_verdict(self, verdict_str: str) -> JudgeVerdict:
+    def _parse_verdict(self, verdict_str: str) -> JudgeVerdict | None:
         """Parse a verdict string into a JudgeVerdict enum.
 
         Args:
@@ -154,11 +141,7 @@ class LLMJudge:
             "wrong": JudgeVerdict.INCORRECT,
         }
 
-        if verdict_str in verdict_map:
-            return verdict_map[verdict_str]
-
-        # Default to INCORRECT if unknown verdict (should not happen with structured output)
-        return JudgeVerdict.INCORRECT
+        return verdict_map.get(verdict_str)
 
     def _is_empty_or_abstained(self, answer: str) -> bool:
         """Check if an answer is empty or clearly an abstention.
@@ -199,6 +182,58 @@ class LLMJudge:
 
         return False
 
+    def _is_retryable_error(self, error: Exception) -> bool:
+        """Determine whether an error is likely transient and safe to retry."""
+        if isinstance(error, asyncio.TimeoutError):
+            return True
+
+        message = str(error).lower()
+        retry_signals = [
+            "rate limit",
+            "429",
+            "timeout",
+            "timed out",
+            "temporarily unavailable",
+            "service unavailable",
+            "connection",
+            "overloaded",
+            "try again",
+        ]
+        return any(signal in message for signal in retry_signals)
+
+    async def _invoke_with_retry(self, payload: dict[str, str]) -> JudgeOutput:
+        """Call the model with timeout and retry behavior."""
+        for attempt in range(self.max_retries + 1):
+            try:
+                return await asyncio.wait_for(
+                    self.chain.ainvoke(payload), timeout=self.timeout_s
+                )
+            except asyncio.CancelledError:
+                raise
+            except Exception as exc:
+                if attempt >= self.max_retries or not self._is_retryable_error(exc):
+                    raise
+                backoff = self.retry_backoff_s * (2**attempt)
+                await asyncio.sleep(backoff)
+
+        # Should never reach here due to return/raise above.
+        raise RuntimeError("Retry loop exited unexpectedly.")
+
+    def _build_reasoning(self, result: JudgeOutput) -> str:
+        """Create a concise, audit-friendly reasoning string."""
+        details: list[str] = []
+        if result.matched_facts:
+            details.append(f"Matched: {', '.join(result.matched_facts)}")
+        if result.missing_facts:
+            details.append(f"Missing: {', '.join(result.missing_facts)}")
+        if result.contradictions:
+            details.append(f"Contradictions: {', '.join(result.contradictions)}")
+
+        if result.reasoning.strip():
+            details.append(f"Rationale: {result.reasoning.strip()}")
+
+        return " | ".join(details) if details else "No detailed reasoning returned."
+
     async def judge(
         self,
         question: str,
@@ -215,28 +250,36 @@ class LLMJudge:
         Returns:
             Tuple of (verdict, reasoning).
         """
-        # Handle empty system answers as ABSTAINED without calling LLM
-        if not system_answer or not system_answer.strip():
+        # Fast-path obvious abstentions without a model call.
+        if self._is_empty_or_abstained(system_answer):
             return (
                 JudgeVerdict.ABSTAINED,
-                "System answer is empty or blank, which counts as abstaining from answering.",
+                "System answer appears empty or abstained from answering.",
             )
 
         try:
-            result: JudgeOutput = await self.chain.ainvoke({
-                "question": question,
-                "expected_answer": expected_answer,
-                "system_answer": system_answer,
-            })
+            result = await self._invoke_with_retry(
+                {
+                    "question": question,
+                    "expected_answer": expected_answer,
+                    "system_answer": system_answer,
+                }
+            )
 
             verdict = self._parse_verdict(result.verdict)
-            return (verdict, result.reasoning)
+            if verdict is None:
+                return (
+                    JudgeVerdict.ERROR,
+                    f"Judge returned unsupported verdict '{result.verdict}'.",
+                )
+
+            return (verdict, self._build_reasoning(result))
 
         except Exception as e:
-            # On error, return INCORRECT with error message
+            # Keep model/runtime failures separate from quality verdicts.
             return (
-                JudgeVerdict.INCORRECT,
-                f"Error during judgment: {str(e)}",
+                JudgeVerdict.ERROR,
+                f"Error during judgment: {type(e).__name__}: {str(e)}",
             )
 
     async def batch_judge(
@@ -291,4 +334,12 @@ class LLMJudge:
         Returns:
             Tuple of (verdict, reasoning).
         """
-        return asyncio.run(self.judge(question, expected_answer, system_answer))
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            return asyncio.run(self.judge(question, expected_answer, system_answer))
+
+        raise RuntimeError(
+            "judge_sync() cannot run inside an active event loop. "
+            "Use: await judge.judge(question, expected_answer, system_answer)"
+        )

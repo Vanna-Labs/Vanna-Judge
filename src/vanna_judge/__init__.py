@@ -1,8 +1,8 @@
 """
-Zomma Judge - LLM-as-Judge evaluation framework for RAG systems.
+Vanna Judge - LLM-as-Judge evaluation framework for RAG systems.
 
 Usage:
-    from zomma_judge import LLMJudge, JudgeVerdict, EvalResult, EvalSummary
+    from vanna_judge import LLMJudge, JudgeVerdict, EvalResult, EvalSummary
 
     judge = LLMJudge()
     verdict, reasoning = await judge.judge(
@@ -12,9 +12,10 @@ Usage:
     )
 """
 
-from zomma_judge.schemas import EvalResult, EvalSummary, JudgeVerdict
-from zomma_judge.judge import LLMJudge
-from zomma_judge.utils import (
+from vanna_judge.schemas import EvalResult, EvalSummary, JudgeVerdict
+from vanna_judge.judge import LLMJudge, JUDGE_SYSTEM_PROMPT, JUDGE_USER_PROMPT
+from vanna_judge.runner import EvaluationRunner
+from vanna_judge.utils import (
     EMBEDDING_DIMENSION,
     EmbeddingCache,
     batch_cosine_similarity,
@@ -28,7 +29,7 @@ from zomma_judge.utils import (
     save_eval_results,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     # Version
@@ -39,6 +40,9 @@ __all__ = [
     "JudgeVerdict",
     # Judge
     "LLMJudge",
+    "EvaluationRunner",
+    "JUDGE_SYSTEM_PROMPT",
+    "JUDGE_USER_PROMPT",
     # Data loading
     "load_chunks",
     "load_qa_dataset",

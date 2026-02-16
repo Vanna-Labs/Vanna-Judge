@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
 """
-Example: Evaluating a custom RAG system with zomma_judge.
+Example: Evaluating a custom RAG system with vanna_judge.
 
 This template shows how to:
 1. Load a Q&A dataset
 2. Query your RAG system
-3. Judge answers with LLMJudge
+3. Judge answers with LLMJudge + EvaluationRunner
 4. Aggregate and save results
 
 Usage:
-    pip install zomma-judge
+    pip install vanna-judge
     python eval_my_rag.py --qa-file my_questions.json --limit 5
 """
 
 import argparse
 import asyncio
-import time
 
-from zomma_judge import (
+from vanna_judge import (
     EvalResult,
     EvalSummary,
+    EvaluationRunner,
     LLMJudge,
     load_qa_dataset,
     print_eval_summary,
@@ -58,37 +58,6 @@ class MyRAGSystem:
 # =============================================================================
 # EVALUATION LOGIC (usually no changes needed)
 # =============================================================================
-async def evaluate_single(
-    rag: MyRAGSystem,
-    judge: LLMJudge,
-    qa: dict,
-) -> EvalResult:
-    """Evaluate a single question against the RAG system."""
-    start = time.perf_counter()
-
-    # Query your RAG system
-    system_answer = await rag.query(qa["question"])
-
-    # Judge the answer
-    verdict, reasoning = await judge.judge(
-        question=qa["question"],
-        expected_answer=qa["answer"],
-        system_answer=system_answer,
-    )
-
-    elapsed_ms = int((time.perf_counter() - start) * 1000)
-
-    return EvalResult(
-        question_id=qa["id"],
-        question=qa["question"],
-        expected_answer=qa["answer"],
-        system_answer=system_answer,
-        verdict=verdict,
-        judge_reasoning=reasoning,
-        timing_ms=elapsed_ms,
-    )
-
-
 async def run_evaluation(
     qa_file: str,
     limit: int | None = None,
@@ -105,30 +74,27 @@ async def run_evaluation(
     # Initialize systems
     rag = MyRAGSystem()
     judge = LLMJudge()
+    runner = EvaluationRunner(
+        judge=judge,
+        system_name="MyRAG",
+        max_concurrency=concurrency,
+    )
 
-    # Run evaluations with concurrency limit
-    semaphore = asyncio.Semaphore(concurrency)
+    async def answer_fn(question: str) -> str:
+        return await rag.query(question)
 
-    async def eval_with_semaphore(qa: dict) -> EvalResult:
-        async with semaphore:
-            result = await evaluate_single(rag, judge, qa)
-            status = "✓" if result.verdict.value == "correct" else result.verdict.value
-            print(f"  Q{result.question_id}: {status}")
-            return result
+    results, summary = await runner.evaluate_live(qa_pairs, answer_fn)
 
-    # Run all evaluations
-    tasks = [eval_with_semaphore(qa) for qa in qa_pairs]
-    results = await asyncio.gather(*tasks)
+    for result in results:
+        status = "✓" if result.verdict.value == "correct" else result.verdict.value
+        print(f"  Q{result.question_id}: {status}")
 
-    # Aggregate results
-    summary = EvalSummary.from_results("MyRAG", list(results))
-
-    return list(results), summary
+    return results, summary
 
 
 async def main():
     parser = argparse.ArgumentParser(
-        description="Evaluate a RAG system using zomma_judge",
+        description="Evaluate a RAG system using vanna_judge",
     )
     parser.add_argument("--qa-file", type=str, required=True, help="Path to Q&A dataset JSON file")
     parser.add_argument("--limit", type=int, default=None, help="Limit number of questions to evaluate")

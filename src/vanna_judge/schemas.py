@@ -1,6 +1,6 @@
 """Result schema dataclasses for the RAG evaluation framework."""
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
@@ -12,6 +12,7 @@ class JudgeVerdict(str, Enum):
     PARTIALLY_CORRECT = "partially"  # Some facts present, nothing wrong
     ABSTAINED = "abstained"  # Says "couldn't find" when answer exists
     INCORRECT = "incorrect"  # Wrong or contradictory information
+    ERROR = "error"  # Judge could not produce a reliable verdict
 
 
 @dataclass
@@ -26,6 +27,7 @@ class EvalResult:
     judge_reasoning: str
     retrieved_chunks: list[dict] = field(default_factory=list)  # For manual review
     timing_ms: int = 0
+    judge_error: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
@@ -38,6 +40,7 @@ class EvalResult:
             "judge_reasoning": self.judge_reasoning,
             "retrieved_chunks": self.retrieved_chunks,
             "timing_ms": self.timing_ms,
+            "judge_error": self.judge_error,
         }
 
     @classmethod
@@ -52,6 +55,7 @@ class EvalResult:
             judge_reasoning=data["judge_reasoning"],
             retrieved_chunks=data.get("retrieved_chunks", []),
             timing_ms=data.get("timing_ms", 0),
+            judge_error=data.get("judge_error"),
         )
 
     @property
@@ -74,6 +78,11 @@ class EvalResult:
         """Check if the verdict is incorrect."""
         return self.verdict == JudgeVerdict.INCORRECT
 
+    @property
+    def is_error(self) -> bool:
+        """Check if judging failed for this result."""
+        return self.verdict == JudgeVerdict.ERROR
+
 
 @dataclass
 class EvalSummary:
@@ -85,7 +94,8 @@ class EvalSummary:
     partially_correct: int
     abstained: int
     incorrect: int
-    avg_time_ms: float
+    errors: int = 0
+    avg_time_ms: float = 0.0
     results: list[EvalResult] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -97,6 +107,7 @@ class EvalSummary:
             "partially_correct": self.partially_correct,
             "abstained": self.abstained,
             "incorrect": self.incorrect,
+            "errors": self.errors,
             "avg_time_ms": self.avg_time_ms,
             "results": [r.to_dict() for r in self.results],
             # Include computed percentages
@@ -104,7 +115,9 @@ class EvalSummary:
             "partially_correct_pct": self.partially_correct_pct,
             "abstained_pct": self.abstained_pct,
             "incorrect_pct": self.incorrect_pct,
+            "error_pct": self.error_pct,
             "accuracy_pct": self.accuracy_pct,
+            "accuracy_pct_excluding_errors": self.accuracy_pct_excluding_errors,
         }
 
     @classmethod
@@ -118,6 +131,7 @@ class EvalSummary:
             partially_correct=data["partially_correct"],
             abstained=data["abstained"],
             incorrect=data["incorrect"],
+            errors=data.get("errors", 0),
             avg_time_ms=data["avg_time_ms"],
             results=results,
         )
@@ -135,6 +149,7 @@ class EvalSummary:
                 partially_correct=0,
                 abstained=0,
                 incorrect=0,
+                errors=0,
                 avg_time_ms=0.0,
                 results=[],
             )
@@ -145,6 +160,7 @@ class EvalSummary:
         )
         abstained = sum(1 for r in results if r.verdict == JudgeVerdict.ABSTAINED)
         incorrect = sum(1 for r in results if r.verdict == JudgeVerdict.INCORRECT)
+        errors = sum(1 for r in results if r.verdict == JudgeVerdict.ERROR)
         avg_time_ms = sum(r.timing_ms for r in results) / len(results)
 
         return cls(
@@ -154,6 +170,7 @@ class EvalSummary:
             partially_correct=partially_correct,
             abstained=abstained,
             incorrect=incorrect,
+            errors=errors,
             avg_time_ms=avg_time_ms,
             results=results,
         )
@@ -187,11 +204,26 @@ class EvalSummary:
         return (self.incorrect / self.total_questions) * 100
 
     @property
+    def error_pct(self) -> float:
+        """Percentage of questions where judging failed."""
+        if self.total_questions == 0:
+            return 0.0
+        return (self.errors / self.total_questions) * 100
+
+    @property
     def accuracy_pct(self) -> float:
         """Overall accuracy (correct + partially correct) percentage."""
         if self.total_questions == 0:
             return 0.0
         return ((self.correct + self.partially_correct) / self.total_questions) * 100
+
+    @property
+    def accuracy_pct_excluding_errors(self) -> float:
+        """Accuracy percentage excluding cases where judgment failed."""
+        judged_total = self.total_questions - self.errors
+        if judged_total <= 0:
+            return 0.0
+        return ((self.correct + self.partially_correct) / judged_total) * 100
 
     def __str__(self) -> str:
         """Human-readable summary string."""
@@ -201,5 +233,6 @@ class EvalSummary:
             f"{self.partially_correct} partial ({self.partially_correct_pct:.1f}%), "
             f"{self.abstained} abstained ({self.abstained_pct:.1f}%), "
             f"{self.incorrect} incorrect ({self.incorrect_pct:.1f}%), "
+            f"{self.errors} errors ({self.error_pct:.1f}%), "
             f"avg time: {self.avg_time_ms:.0f}ms"
         )

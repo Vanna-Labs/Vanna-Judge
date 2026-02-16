@@ -1,18 +1,24 @@
-# Zomma Judge
+# Vanna Judge
 
 LLM-as-Judge evaluation framework for RAG systems.
 
 ## Installation
 
 ```bash
-pip install zomma-judge
+pip install vanna-judge
+```
+
+Install directly from GitHub:
+
+```bash
+pip install "git+https://github.com/Vanna-Labs/Vanna-Judge.git"
 ```
 
 Or install from source:
 
 ```bash
-git clone https://github.com/Zomma-Labs/zomma-judge.git
-cd zomma-judge
+git clone https://github.com/Vanna-Labs/vanna-judge.git
+cd vanna-judge
 pip install -e .
 ```
 
@@ -20,10 +26,15 @@ pip install -e .
 
 ```python
 import asyncio
-from zomma_judge import LLMJudge, JudgeVerdict
+from vanna_judge import LLMJudge, JudgeVerdict
 
 async def main():
-    judge = LLMJudge()
+    judge = LLMJudge(
+        model="gpt-5.1",
+        temperature=0.0,
+        timeout_s=30,
+        max_retries=2,
+    )
 
     verdict, reasoning = await judge.judge(
         question="What was inflation in Boston?",
@@ -39,7 +50,7 @@ asyncio.run(main())
 
 ## Verdict Categories
 
-The judge classifies answers into 4 categories:
+The judge classifies answers into 5 categories:
 
 | Verdict | Description |
 |---------|-------------|
@@ -47,27 +58,49 @@ The judge classifies answers into 4 categories:
 | `PARTIALLY_CORRECT` | Some facts present, nothing wrong |
 | `ABSTAINED` | System said "don't know" when answer exists |
 | `INCORRECT` | Contradicts expected answer |
+| `ERROR` | Judge failed (timeout/API/parse issue) |
 
-## Batch Evaluation
+Judge failures are tracked separately from model quality verdicts to avoid corrupting accuracy.
+
+## Evaluation Runner (Recommended)
 
 ```python
-from zomma_judge import LLMJudge, EvalResult, EvalSummary
+from vanna_judge import LLMJudge, EvaluationRunner, load_qa_dataset
+
+qa_pairs = load_qa_dataset("questions.json")
 
 judge = LLMJudge()
+runner = EvaluationRunner(judge=judge, system_name="MyRAG", max_concurrency=8)
 
-# Batch judge multiple answers
-results = await judge.batch_judge([
-    (question1, expected1, system1),
-    (question2, expected2, system2),
-], max_concurrency=10)
+async def answer_fn(question: str) -> str:
+    return await my_rag.query(question)
+
+results, summary = await runner.evaluate_live(qa_pairs, answer_fn)
 ```
+
+## CLI for Precomputed Answers
+
+Evaluate pre-generated system answers from JSON:
+
+```bash
+vanna-judge \
+  --input eval_inputs.json \
+  --system-name MyRAG \
+  --model gpt-5.1 \
+  --concurrency 8
+```
+
+Accepted row format keys:
+- `question`
+- `expected_answer` (fallback: `answer`)
+- `system_answer` (fallbacks: `prediction`, `model_answer`)
 
 ## Utilities
 
 ### Loading Data
 
 ```python
-from zomma_judge import load_chunks, load_qa_dataset
+from vanna_judge import load_chunks, load_qa_dataset
 
 # Load JSONL chunks (for RAG corpus)
 chunks = load_chunks("corpus.jsonl")
@@ -79,7 +112,7 @@ qa_pairs = load_qa_dataset("questions.json")
 ### Embedding Cache
 
 ```python
-from zomma_judge import EmbeddingCache, get_openai_embedding_fn
+from vanna_judge import EmbeddingCache, get_openai_embedding_fn
 
 cache = EmbeddingCache("embeddings.pkl")
 embed_fn = get_openai_embedding_fn()
@@ -90,7 +123,7 @@ embeddings = cache.get_or_compute(texts, embed_fn)
 ### Saving Results
 
 ```python
-from zomma_judge import save_eval_results, load_eval_results
+from vanna_judge import save_eval_results, load_eval_results
 
 # Save
 filepath = save_eval_results(results, summary, config, "eval_output/")
@@ -102,6 +135,21 @@ results, summary, config = load_eval_results(filepath)
 ## Example
 
 See `examples/eval_my_rag.py` for a complete template showing how to evaluate your own RAG system.
+
+## Prompt Design
+
+The default judge prompt is compact and enforces structured output:
+- `verdict` (`correct|partially|abstained|incorrect`)
+- `matched_facts`
+- `missing_facts`
+- `contradictions`
+- `reasoning`
+
+You can import the defaults:
+
+```python
+from vanna_judge import JUDGE_SYSTEM_PROMPT, JUDGE_USER_PROMPT
+```
 
 ## Configuration
 
@@ -119,4 +167,4 @@ judge = LLMJudge(model="gpt-4o", temperature=0.0)
 
 ## License
 
-Apache 2.0 License - see LICENSE file.
+MIT License - see LICENSE file.

@@ -7,17 +7,13 @@ DESCRIPTION: Common utility functions for the RAG evaluation framework.
 import json
 import hashlib
 import pickle
-import os
 from pathlib import Path
 from datetime import datetime
-from typing import Callable, Any
+from typing import Callable
 
 import numpy as np
-from dotenv import load_dotenv
 
-from zomma_judge.schemas import EvalResult, EvalSummary
-
-load_dotenv()
+from vanna_judge.schemas import EvalResult, EvalSummary
 
 # Constants
 EMBEDDING_DIMENSION = 3072  # text-embedding-3-large dimension
@@ -158,11 +154,14 @@ def save_eval_results(
             "partially_correct": summary.partially_correct,
             "abstained": summary.abstained,
             "incorrect": summary.incorrect,
+            "errors": summary.errors,
             "correct_pct": summary.correct_pct,
             "partially_correct_pct": summary.partially_correct_pct,
             "abstained_pct": summary.abstained_pct,
             "incorrect_pct": summary.incorrect_pct,
+            "error_pct": summary.error_pct,
             "accuracy_pct": summary.accuracy_pct,
+            "accuracy_pct_excluding_errors": summary.accuracy_pct_excluding_errors,
             "avg_time_ms": summary.avg_time_ms,
         },
         "results": [r.to_dict() for r in results],
@@ -434,7 +433,11 @@ def print_eval_summary(summary: EvalSummary) -> None:
     )
     print(f"  Abstained:         {summary.abstained:3d} ({summary.abstained_pct:5.1f}%)")
     print(f"  Incorrect:         {summary.incorrect:3d} ({summary.incorrect_pct:5.1f}%)")
+    print(f"  Judge Errors:      {summary.errors:3d} ({summary.error_pct:5.1f}%)")
     print(f"")
     print(f"Overall Accuracy (correct + partial): {summary.accuracy_pct:.1f}%")
+    print(
+        f"Accuracy Excluding Judge Errors: {summary.accuracy_pct_excluding_errors:.1f}%"
+    )
     print(f"Average Time per Question: {summary.avg_time_ms:.0f}ms")
     print("=" * 60 + "\n")
