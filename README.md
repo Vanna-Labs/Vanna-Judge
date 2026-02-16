@@ -2,6 +2,11 @@
 
 LLM-as-Judge evaluation framework for RAG systems.
 
+## Documentation
+
+- Architecture: `docs/ARCHITECTURE.md`
+- Testing runbook: `docs/TESTING.md`
+
 ## Installation
 
 ```bash
@@ -135,6 +140,27 @@ results, summary, config = load_eval_results(filepath)
 ## Example
 
 See `examples/eval_my_rag.py` for a complete template showing how to evaluate your own RAG system.
+
+## Preflight Before Going Live
+
+Run the full local regression suite (fast, no API calls):
+
+```bash
+pytest -q
+```
+
+Run a larger live benchmark that uses your `.env` OpenAI key:
+
+```bash
+python3 scripts/run_preflight_live_eval.py \
+  --input eval_datasets/preflight_large.json \
+  --system-name MyRAG \
+  --concurrency 8
+```
+
+The preflight script exits non-zero if:
+- judge error rate is too high (`--max-error-rate`, default `0.05`)
+- verdict match rate against `expected_verdict` labels is too low (`--min-verdict-match`, default `0.75`)
 
 ## Prompt Design
 

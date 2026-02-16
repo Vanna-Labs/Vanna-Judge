@@ -1,0 +1,642 @@
+[
+  {
+    "id": 1,
+    "category": "correct",
+    "question": "What is 11 + 7?",
+    "expected_answer": "18",
+    "system_answer": "The answer is 18.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 2,
+    "category": "correct",
+    "question": "What is 12 + 8?",
+    "expected_answer": "20",
+    "system_answer": "The answer is 20.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 3,
+    "category": "correct",
+    "question": "What is 13 + 9?",
+    "expected_answer": "22",
+    "system_answer": "The answer is 22.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 4,
+    "category": "correct",
+    "question": "What is 14 + 10?",
+    "expected_answer": "24",
+    "system_answer": "The answer is 24.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 5,
+    "category": "correct",
+    "question": "What is 15 + 11?",
+    "expected_answer": "26",
+    "system_answer": "The answer is 26.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 6,
+    "category": "correct",
+    "question": "What is 16 + 12?",
+    "expected_answer": "28",
+    "system_answer": "The answer is 28.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 7,
+    "category": "correct",
+    "question": "What is 17 + 13?",
+    "expected_answer": "30",
+    "system_answer": "The answer is 30.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 8,
+    "category": "correct",
+    "question": "What is 18 + 14?",
+    "expected_answer": "32",
+    "system_answer": "The answer is 32.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 9,
+    "category": "correct",
+    "question": "What is 19 + 15?",
+    "expected_answer": "34",
+    "system_answer": "The answer is 34.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 10,
+    "category": "correct",
+    "question": "What is 20 + 16?",
+    "expected_answer": "36",
+    "system_answer": "The answer is 36.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 11,
+    "category": "correct",
+    "question": "What is 21 + 17?",
+    "expected_answer": "38",
+    "system_answer": "The answer is 38.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 12,
+    "category": "correct",
+    "question": "What is 22 + 18?",
+    "expected_answer": "40",
+    "system_answer": "The answer is 40.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 13,
+    "category": "correct",
+    "question": "What is 23 + 19?",
+    "expected_answer": "42",
+    "system_answer": "The answer is 42.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 14,
+    "category": "correct",
+    "question": "What is 24 + 20?",
+    "expected_answer": "44",
+    "system_answer": "The answer is 44.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 15,
+    "category": "correct",
+    "question": "What is 25 + 21?",
+    "expected_answer": "46",
+    "system_answer": "The answer is 46.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 16,
+    "category": "correct",
+    "question": "What is 26 + 22?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 48.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 17,
+    "category": "correct",
+    "question": "What is 27 + 23?",
+    "expected_answer": "50",
+    "system_answer": "The answer is 50.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 18,
+    "category": "correct",
+    "question": "What is 28 + 24?",
+    "expected_answer": "52",
+    "system_answer": "The answer is 52.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 19,
+    "category": "correct",
+    "question": "What is 29 + 25?",
+    "expected_answer": "54",
+    "system_answer": "The answer is 54.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 20,
+    "category": "correct",
+    "question": "What is 30 + 26?",
+    "expected_answer": "56",
+    "system_answer": "The answer is 56.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 21,
+    "category": "correct",
+    "question": "What is 31 + 27?",
+    "expected_answer": "58",
+    "system_answer": "The answer is 58.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 22,
+    "category": "correct",
+    "question": "What is 32 + 28?",
+    "expected_answer": "60",
+    "system_answer": "The answer is 60.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 23,
+    "category": "correct",
+    "question": "What is 33 + 29?",
+    "expected_answer": "62",
+    "system_answer": "The answer is 62.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 24,
+    "category": "correct",
+    "question": "What is 34 + 30?",
+    "expected_answer": "64",
+    "system_answer": "The answer is 64.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 25,
+    "category": "correct",
+    "question": "What is 35 + 31?",
+    "expected_answer": "66",
+    "system_answer": "The answer is 66.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 26,
+    "category": "correct",
+    "question": "What is 36 + 32?",
+    "expected_answer": "68",
+    "system_answer": "The answer is 68.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 27,
+    "category": "correct",
+    "question": "What is 37 + 33?",
+    "expected_answer": "70",
+    "system_answer": "The answer is 70.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 28,
+    "category": "correct",
+    "question": "What is 38 + 34?",
+    "expected_answer": "72",
+    "system_answer": "The answer is 72.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 29,
+    "category": "correct",
+    "question": "What is 39 + 35?",
+    "expected_answer": "74",
+    "system_answer": "The answer is 74.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 30,
+    "category": "correct",
+    "question": "What is 40 + 36?",
+    "expected_answer": "76",
+    "system_answer": "The answer is 76.",
+    "expected_verdict": "correct"
+  },
+  {
+    "id": 31,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 0?",
+    "expected_answer": "The product name is Widget-0 and the launch year is 2010.",
+    "system_answer": "The product name is Widget-0.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 32,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 1?",
+    "expected_answer": "The product name is Widget-1 and the launch year is 2011.",
+    "system_answer": "The product name is Widget-1.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 33,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 2?",
+    "expected_answer": "The product name is Widget-2 and the launch year is 2012.",
+    "system_answer": "The product name is Widget-2.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 34,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 3?",
+    "expected_answer": "The product name is Widget-3 and the launch year is 2013.",
+    "system_answer": "The product name is Widget-3.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 35,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 4?",
+    "expected_answer": "The product name is Widget-4 and the launch year is 2014.",
+    "system_answer": "The product name is Widget-4.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 36,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 5?",
+    "expected_answer": "The product name is Widget-5 and the launch year is 2015.",
+    "system_answer": "The product name is Widget-5.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 37,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 6?",
+    "expected_answer": "The product name is Widget-6 and the launch year is 2016.",
+    "system_answer": "The product name is Widget-6.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 38,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 7?",
+    "expected_answer": "The product name is Widget-7 and the launch year is 2017.",
+    "system_answer": "The product name is Widget-7.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 39,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 8?",
+    "expected_answer": "The product name is Widget-8 and the launch year is 2018.",
+    "system_answer": "The product name is Widget-8.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 40,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 9?",
+    "expected_answer": "The product name is Widget-9 and the launch year is 2019.",
+    "system_answer": "The product name is Widget-9.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 41,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 10?",
+    "expected_answer": "The product name is Widget-10 and the launch year is 2020.",
+    "system_answer": "The product name is Widget-10.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 42,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 11?",
+    "expected_answer": "The product name is Widget-11 and the launch year is 2021.",
+    "system_answer": "The product name is Widget-11.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 43,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 12?",
+    "expected_answer": "The product name is Widget-12 and the launch year is 2022.",
+    "system_answer": "The product name is Widget-12.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 44,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 13?",
+    "expected_answer": "The product name is Widget-13 and the launch year is 2023.",
+    "system_answer": "The product name is Widget-13.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 45,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 14?",
+    "expected_answer": "The product name is Widget-14 and the launch year is 2024.",
+    "system_answer": "The product name is Widget-14.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 46,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 15?",
+    "expected_answer": "The product name is Widget-15 and the launch year is 2025.",
+    "system_answer": "The product name is Widget-15.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 47,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 16?",
+    "expected_answer": "The product name is Widget-16 and the launch year is 2026.",
+    "system_answer": "The product name is Widget-16.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 48,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 17?",
+    "expected_answer": "The product name is Widget-17 and the launch year is 2027.",
+    "system_answer": "The product name is Widget-17.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 49,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 18?",
+    "expected_answer": "The product name is Widget-18 and the launch year is 2028.",
+    "system_answer": "The product name is Widget-18.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 50,
+    "category": "partially",
+    "question": "What are the name and launch year for product code 19?",
+    "expected_answer": "The product name is Widget-19 and the launch year is 2029.",
+    "system_answer": "The product name is Widget-19.",
+    "expected_verdict": "partially"
+  },
+  {
+    "id": 51,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-0?",
+    "expected_answer": "The listed average temperature is 60F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 52,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-1?",
+    "expected_answer": "The listed average temperature is 61F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 53,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-2?",
+    "expected_answer": "The listed average temperature is 62F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 54,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-3?",
+    "expected_answer": "The listed average temperature is 63F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 55,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-4?",
+    "expected_answer": "The listed average temperature is 64F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 56,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-5?",
+    "expected_answer": "The listed average temperature is 65F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 57,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-6?",
+    "expected_answer": "The listed average temperature is 66F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 58,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-7?",
+    "expected_answer": "The listed average temperature is 67F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 59,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-8?",
+    "expected_answer": "The listed average temperature is 68F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 60,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-9?",
+    "expected_answer": "The listed average temperature is 69F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 61,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-10?",
+    "expected_answer": "The listed average temperature is 70F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 62,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-11?",
+    "expected_answer": "The listed average temperature is 71F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 63,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-12?",
+    "expected_answer": "The listed average temperature is 72F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 64,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-13?",
+    "expected_answer": "The listed average temperature is 73F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 65,
+    "category": "abstained",
+    "question": "What average temperature is listed for City-14?",
+    "expected_answer": "The listed average temperature is 74F.",
+    "system_answer": "I do not have enough information in the provided context to answer that.",
+    "expected_verdict": "abstained"
+  },
+  {
+    "id": 66,
+    "category": "incorrect",
+    "question": "What is 50 minus 2?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  },
+  {
+    "id": 67,
+    "category": "incorrect",
+    "question": "What is 51 minus 3?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  },
+  {
+    "id": 68,
+    "category": "incorrect",
+    "question": "What is 52 minus 4?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  },
+  {
+    "id": 69,
+    "category": "incorrect",
+    "question": "What is 53 minus 5?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  },
+  {
+    "id": 70,
+    "category": "incorrect",
+    "question": "What is 54 minus 6?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  },
+  {
+    "id": 71,
+    "category": "incorrect",
+    "question": "What is 55 minus 7?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  },
+  {
+    "id": 72,
+    "category": "incorrect",
+    "question": "What is 56 minus 8?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  },
+  {
+    "id": 73,
+    "category": "incorrect",
+    "question": "What is 57 minus 9?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  },
+  {
+    "id": 74,
+    "category": "incorrect",
+    "question": "What is 58 minus 10?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  },
+  {
+    "id": 75,
+    "category": "incorrect",
+    "question": "What is 59 minus 11?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  },
+  {
+    "id": 76,
+    "category": "incorrect",
+    "question": "What is 60 minus 12?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  },
+  {
+    "id": 77,
+    "category": "incorrect",
+    "question": "What is 61 minus 13?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  },
+  {
+    "id": 78,
+    "category": "incorrect",
+    "question": "What is 62 minus 14?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  },
+  {
+    "id": 79,
+    "category": "incorrect",
+    "question": "What is 63 minus 15?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  },
+  {
+    "id": 80,
+    "category": "incorrect",
+    "question": "What is 64 minus 16?",
+    "expected_answer": "48",
+    "system_answer": "The answer is 51.",
+    "expected_verdict": "incorrect"
+  }
+]
